@@ -45,6 +45,7 @@ function refresh(){
         $('#windows').show();
         $('#windows').children(':not(#background)').hide();
         $('#note-menu').show();
+        editNoteId = $('.btnEdit:focus').parent('div').parent('div').attr('id');
     });
 }
 
@@ -94,13 +95,13 @@ function createNote(json){
 
 function createNoteBox(note){
     var notebox = `
-    <div id="${note.id}" class="${(note.important) ? 'bg-warning' : (note.ckecked) ? 'bg-success text-white' : 'bg-light'} bg-gradient p-4 box rounded m-3 col-1" >
+    <div id="${note.id}" class="${(note.checked) ? 'bg-success text-white' : (note.important) ? 'bg-warning' : 'bg-light'} bg-gradient p-4 box rounded m-3 col-1" >
 
         <!-- title -->
         <div class="mb-3 d-flex justify-content-between align-items-center">
             <h4 class="pt-1">${note.title}</h4>
             <button type="button" class="btn p-1 btnEdit" style="height: auto !important;">   
-                <svg width="25" height="25" viewBox="0 0 16 16" class="bi bi-three-dots-vertical" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <svg width="25" height="25" viewBox="0 0 16 16" class="bi bi-three-dots-vertical" fill="${(note.checked) ? 'white' : 'currentColor'}" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
                 </svg>
             </button>
@@ -135,12 +136,12 @@ function checkConnection(){
 
 // menu
 
-function noteMenu(id){
-
-}
-
-function nodeCheck(id){
-
+function noteCheck(id, val){
+    notesObj = JSON.parse(getCookie('school-notes'));
+    notesObj.notes[id].checked = val;
+    notesObj.notes[id].important = false;
+    setCookie('school-notes', JSON.stringify(notesObj));
+    refresh();
 }
 
 function noteEdit(id){
@@ -181,10 +182,26 @@ function getCookie(name){
  */
 function setCookie(name, value){
     
-    var cookie = name + '=' + encodeURIComponent(value);
+    var cookie = name + '=' + encodeURIComponent(value) + `; max-age= ${60*60*24*30}; path=/;`;
+    console.log(cookie);
     document.cookie = cookie;
     return;
     
+}
+
+// download
+
+function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
 }
 
 // markdown

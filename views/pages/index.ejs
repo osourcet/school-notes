@@ -179,6 +179,62 @@
                 <button type="button" class="btn btn-secondary btnCancle" style="width: 100%;">Abbrechen</button>
             </div>
         </div>
+
+        <!-- Note Edit -->
+        <div id="edit-note-form" class="bg-light bg-gradient p-4 menu-box rounded">
+            <form>
+                <!-- title -->
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="editTitle" placeholder="Titel" name="title">
+                </div>
+                <!-- subject -->
+                <div class="mb-3">
+                    <label for="editSubject" class="form-label">Schulfach</label>
+                    <select class="form-select" id="editSubject" name="subject">
+                        <option value="Sonstiges">Sonstiges</option>
+                        <option value="Deutsch">Deutsch</option>
+                        <option value="Englisch">Englisch</option>
+                        <option value="Latein">Latein</option>
+                        <option value="Mathe">Mathe</option>
+                        <option value="Religion">Religion</option>
+                        <option value="Biologie">Biologie</option>
+                        <option value="Wirtschaft und Recht">Wirtschaft und Recht</option>
+                        <option value="Musik">Musik</option>
+                        <option value="Informatik">Informatik</option>
+                        <option value="Sozialkunde">Sozialkunde</option>
+                        <option value="Sport">Sport</option>
+                        <option value="Geschichte">Geschichte</option>
+                        <option value="Chemie">Chemie</option>
+                        <option value="Physik">Physik</option>
+                        <option value="Kunst">Kunst</option>
+                        <option value="Geographie">Geographie</option>
+                    </select>
+                </div>
+                <!-- date -->
+                <div class="mb-3">
+                    <label for="editDate" class="form-label">Bis wann muss es erledigt werden?</label>
+                    <input type="date" class="form-control" id="editDate" name="date">
+                </div>
+                <!-- important note -->
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="editImportant" name="important">
+                    <label class="form-check-label" for="editImportant">Wichtige Notiz?</label>
+                </div>
+                <!-- important note -->
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="editChecked" name="important">
+                    <label class="form-check-label" for="editChecked">Die Notiz ist erledigt</label>
+                </div>
+                <!-- notes -->
+                <div class="mb-3">
+                    <label for="editContent" class="form-label">Inhalt</label>
+                    <textarea class="form-control" id="editContent" placeholder="Ihre Notizen" aria-describedby="contentHelp" name="content" rows="5"></textarea>
+                <div id="contentHelp" class="form-text">Markdown wird unterstüzt</div>
+                </div>
+                <button type="button" class="btn btn-primary" id="btnEditNote">Änderungen speichern</button>
+                <button type="button" class="btn btn-danger btnCancle">Abbrechen</button>
+            </form>
+        </div>
     </div>
     <nav class="navbar navbar-light bg-dark bg-gradient text-white">
         <div class="container-fluid">
@@ -415,11 +471,45 @@
             });
 
             $('#btnEdit').on('click', () => {
+                $('#windwos').hide();
+                $('#windows').show();
+                $('#windows').children(':not(#background)').hide();
 
+                // get input
+
+                var noteObj = notes.filter((val) => val.id == editNoteId)[0];
+                
+                $('#editTitle').val(noteObj.title);
+                $('#editSubject').val(noteObj.subject);
+                $('#editDate').val(noteObj.date);
+                $('#editImportant').prop('checked', noteObj.important);
+                $('#editChecked').prop('checked', noteObj.checked);
+                $('#editContent').val(noteObj.content);
+
+                $('#edit-note-form').show();
             });
 
             $('#btnDelete').on('click', () => {
+                $('#windows').hide();
+                removeNote(editNoteId);
+            });
 
+            // edit note form
+            $('#btnEditNote').on('click', () => {
+                noteObj = {
+                    'title': $('#editTitle').val(),
+                    'subject': $('#editSubject').val(),
+                    'date': $('#editDate').val(),
+                    'important': $('#editImportant').is(':checked'),
+                    'content': $('#editContent').val(),
+                    'ckecked': false
+                };
+
+                $('#windows').hide();
+
+                // editNotes = true;
+                updateNote(noteObj, editNoteId);
+                noteCheck(editNoteId, $('#editChecked').is(':checked'));
             });
 
             // Cancle

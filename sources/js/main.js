@@ -93,6 +93,22 @@ function createNote(json){
     refresh();
 }
 
+function updateNote(json, id){
+    notesObj = JSON.parse(getCookie('school-notes'));
+    notesObj.notes[id] = json;
+    setCookie('school-notes', JSON.stringify(notesObj));
+    refresh();
+}
+
+function removeNote(id){
+    notesObj = JSON.parse(getCookie('school-notes'));
+    notes = notesObj.notes.filter(val => { return val.id != id });
+    console.log(id);
+    console.log(notes);
+    setCookie('school-notes', JSON.stringify(notesObj));
+    refresh();
+}
+
 function createNoteBox(note){
     var notebox = `
     <div id="${note.id}" class="${(note.checked) ? 'bg-success text-white' : (note.important) ? 'bg-warning' : 'bg-light'} bg-gradient p-4 box rounded m-3 col-1" >

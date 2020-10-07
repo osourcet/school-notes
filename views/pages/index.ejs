@@ -529,14 +529,14 @@
                     'date': $('#editDate').val(),
                     'important': $('#editImportant').is(':checked'),
                     'content': $('#editContent').val(),
-                    'ckecked': false
+                    'ckecked': $('#editChecked').is(':checked')
                 };
 
                 $('#windows').hide();
 
                 // editNotes = true;
                 updateNote(noteObj, editNoteId);
-                noteCheck(editNoteId, $('#editChecked').is(':checked'));
+                //noteCheck(editNoteId);
             });
 
             // Cancle

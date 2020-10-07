@@ -89,6 +89,7 @@ function createNote(json){
     if (notesObj == null) notesObj = {notes: []};
     if (typeof notesObj.notes == 'undefined') notesObj.notes = [];
     notesObj.notes.push(json);
+    notesObj.notes.forEach((note, index) => note.id = index);
     setCookie('school-notes', JSON.stringify(notesObj));
     refresh();
 }
@@ -101,10 +102,12 @@ function updateNote(json, id){
 }
 
 function removeNote(id){
-    notesObj = JSON.parse(getCookie('school-notes'));
-    notes = notesObj.notes.filter(val => { return val.id != id });
+    var notesFiltered = notes.filter((value) => { return value.id != parseInt(id); });
     console.log(id);
+    console.log(typeof id);
     console.log(notes);
+    console.log(notesFiltered);
+    var notesObj = {notes: notesFiltered};
     setCookie('school-notes', JSON.stringify(notesObj));
     refresh();
 }
@@ -128,7 +131,7 @@ function createNoteBox(note){
         </div>
         <!-- date -->
         <div class="mb-4">
-            Zuerledigen bis: ${moment(note.date, 'YYYY-MM-DD').format(dateFormat)}
+            Zu erledigen bis: ${moment(note.date, 'YYYY-MM-DD').format(dateFormat)}
         </div>
         <!-- notes -->
         <div class="">

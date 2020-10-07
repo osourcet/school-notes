@@ -17,15 +17,12 @@ app.use('/sources', express.static(__dirname + '/sources'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
-app.get('/', (req, res) => res.render('pages/index.ejs'));
+app.get('/', (req, res) => res.render('pages/index.ejs', {version: require('./package.json').version}));
 
-router.post('/create', (req, res) => {
-    console.log(req.body);
-
-
-
-    res.redirect('/');
-});
+// router.post('/create', (req, res) => {
+//     console.log(req.body);
+//     res.redirect('/');
+// });
 
 app.use('/', router);
 app.listen(port, () => console.log(`Example app listening on port port!`));

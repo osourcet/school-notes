@@ -1,3 +1,9 @@
+@media screen and (max-width: 550px){
+    .nav-res{
+        display: none;
+    }
+}
+ 
 .bg-light {
     background-color: #ebebeb !important;
 }

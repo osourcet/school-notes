@@ -16,6 +16,7 @@ function refresh(){
     var notes_html = '';
 
     notes.forEach((note, index) => note.id = index);
+    notes.forEach((note) => {if (note.date == "") note.date = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;});
 
     var notesImportant = notes.filter(note => note.important),
         notesNormal = notes.filter(note => (!note.important && !note.checked)),

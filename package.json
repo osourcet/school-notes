@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "run": "node .",
-    "dev": "nodemon ."
+    "run-server": "node .",
+    "dev-server": "nodemon ."
   },
   "author": "Felix Wochnick",
   "license": "GPL-3.0",

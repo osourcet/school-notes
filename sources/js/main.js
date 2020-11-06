@@ -76,6 +76,10 @@ function sortByProperty(objArray, prop, direction){
     return clone;
 }
 
+// +---------+
+// |  notes  |
+// +---------+
+
 /**
  * create Note
  * @param {object} json 
@@ -164,15 +168,9 @@ function noteCheck(id, val){
     refresh();
 }
 
-function noteEdit(id){
-
-}
-
-function noteRemove(id){
-
-}
-
-// coockies
+// +-----------+
+// |  cookies  |
+// +-----------+
 
 /**
  * get cookie
@@ -200,13 +198,9 @@ function getCookie(name){
  * @param {String} name 
  * @param {String} value required when setting cookie
  */
-function setCookie(name, value){
-    
+function setCookie(name, value){   
     var cookie = name + '=' + encodeURIComponent(value) + `; max-age= ${60*60*24*30}; path=/;`;
-    console.log(cookie);
-    document.cookie = cookie;
-    return;
-    
+    document.cookie = cookie;    
 }
 
 // download

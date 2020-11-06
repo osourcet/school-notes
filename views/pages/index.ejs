@@ -126,7 +126,7 @@
             </div>
         </div>
 
-        <!-- Filter -->
+        <!-- filter / sort -->
         <div id="filter" class="bg-light bg-gradient p-4 menu-box rounded">
             <div>
                 <h3 class="mb-4">
@@ -152,6 +152,11 @@
                         <label for="sort" class="form-label">Sortieren nach</label>
                         <select class="form-select" id="sort">
                             <option selected>Datum absteigend</option>
+                            <option selected>Datum aufsteigend</option>
+                            <option selected>Titel absteigend</option>
+                            <option selected>Titel aufsteigend</option>
+                            <option selected>Fach absteigend</option>
+                            <option selected>Fach aufsteigend</option>
                         </select>
                     </div>
                 </form>
@@ -388,7 +393,7 @@
     </script>
 
     <script>
-        $(document).ready(() => {
+        $(() => {
             // tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -498,7 +503,50 @@
                 download('notes.json', getCookie('school-notes'));
             });
 
-            // Filter
+            // +--------+
+            // |  sort  |
+            // +--------+
+
+            $('#sort').on('change', () => {
+                switch ($('#sort').val()) {
+                    // sort by date
+                    // down
+                    case 'Datum absteigend':
+                        sortSettings = ['date', -1];
+                        break;
+                    
+                    // up
+                    case 'Datum aufsteigend':
+                        sortSettings = ['date', 1];
+                        break;
+
+                    // sort by title
+                    // down
+                    case 'Titel absteigend':
+                        sortSettings = ['title', 1];
+                        break;
+                    
+                    // up
+                    case 'Titel aufsteigend':
+                        sortSettings = ['title', -1];
+                        break;
+                    
+                    // sort by subject
+                    // down    
+                    case 'Fach absteigend':
+                        sortSettings = ['subject', 1];
+                        break;
+                    
+                    // up    
+                    case 'Fach aufsteigend':
+                        sortSettings = ['subject', -1];
+                        break;
+                }
+            });
+
+            // +----------+
+            // |  filter  |
+            // +----------+
 
             $('#showImportantNotes').on('change', () => {
                 showNotes[0] = $('#showImportantNotes').is(':checked');
@@ -512,7 +560,9 @@
                 showNotes[2] = $('#showCheckedNotes').is(':checked');
             });
 
-            // Note menu
+            // +----------------+
+            // |  note options  |
+            // +----------------+
 
             $('#btnCheck').on('click', () => {
                 noteCheck(editNoteId, true);
@@ -574,17 +624,6 @@
             // refresh
             refresh();
         });
-        
-
-        // function btnCreateNote_clicked(){
-        //     $('#create-note-form').show();
-        //     $('#create-note-bs').hide();
-        // }
-
-        // function cancleCreateNote_clicked(){
-        //     $('#create-note-form').hide();
-        //     $('#create-note-bs').show();
-        // }
     </script>
 </body>
 </html>

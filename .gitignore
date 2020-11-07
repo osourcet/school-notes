@@ -1,5 +1,8 @@
+# directories
 node_modules
-
 test
+data/sql/test
 
+# files
 package-lock.json
+# data/sql/data.db

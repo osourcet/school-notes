@@ -19,7 +19,8 @@
     "ejs": "^3.1.5",
     "express": "^4.17.1",
     "moment": "^2.28.0",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "^5.0.0",
+    "uuid": "^8.3.1"
   },
   "repository": {
     "url": "https://github.com/osourcet/school-notes.git"

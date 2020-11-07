@@ -8,10 +8,10 @@ const port = 3000;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(express.json({limit: '1mb'}));
 
 // static
 app.use('/sources', express.static(__dirname + '/sources'));
-
 
 // view engine
 app.set('views', __dirname + '/views');

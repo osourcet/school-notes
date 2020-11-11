@@ -1,232 +1,295 @@
-function refresh(){
-    $('#alerts').children().hide();
+// main function
+document.addEventListener('DOMContentLoaded', () => {
 
-    if ( !checkConnection() ) $('#no-connection').show();
-    if ( editNotes ) $('#no-sync').show();
+        // #buttons > *
+    let buttons = document.querySelector('#buttons'),
+        // #create-note > *
+        window_NoteCreate = document.querySelector('#note-create'),
+        // #delete-notes > *
+        window_NotesDelete = document.querySelector('#notes-delete'),
+        // #settings > *
+        window_Settings = document.querySelector('#settings'),
+        // #filter-sorting > *
+        window_Filter_Sorting = document.querySelector('#filter-sorting'),
+        // #note-menu > *
+        window_NoteMenu = document.querySelector('#note-menu'),
+        // #note-edit > *
+        window_NoteEdit = document.querySelector('#note-edit');
 
-    try{
-        notes = JSON.parse(getCookie('school-notes')).notes;
-    }
-    catch(e){
-        notes = [];
-    }
+    // +------------------+
+    // |  event listener  |
+    // +------------------+
 
-    $('#notes').html('');
+    // reload event listener
+    document.addEventListener('reload', () => {
+        checkAlerts();
 
-    var notes_html = '';
-
-    notes.forEach((note, index) => note.id = index);
-    notes.forEach((note) => {if (note.date == "") note.date = `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}`;});
-
-    var notesImportant = notes.filter(note => note.important),
-        notesNormal = notes.filter(note => (!note.important && !note.checked)),
-        notesChecked = notes.filter(note => note.checked);
-
-    notesImportant = sortByProperty(notesImportant, sortSettings[0], sortSettings[1]);
-    notesNormal = sortByProperty(notesNormal, sortSettings[0], sortSettings[1]);
-    notesChecked = sortByProperty(notesChecked, sortSettings[0], sortSettings[1]);
-
-    filteredNotes = [];
-    if (showNotes[0]) notesImportant.forEach(note => {filteredNotes.push(note);});
-    if (showNotes[1]) notesNormal.forEach(note => {filteredNotes.push(note);});
-    if (showNotes[2]) notesChecked.forEach(note => {filteredNotes.push(note);});
-    // notes.push(notesImportant);
-    // notes.push(notesNormal);
-    // notes.push(notesChecked);
-
-    filteredNotes.forEach((item) => {
-        notes_html += createNoteBox(item);
-    });
-
-    $('#notes').html(notes_html);
-
-
-    // Edit
-    $('.btnEdit').on('click', () => {
-        $('#windows').show();
-        $('#windows').children(':not(#background)').hide();
-        $('#note-menu').show();
-        editNoteId = $('.btnEdit:focus').parent('div').parent('div').attr('id');
-    });
-}
-
-function sync(){
-    
-}
-
-// FROM: https://stackoverflow.com/a/4698083
-function sortByProperty(objArray, prop, direction){
-    if (arguments.length<2) throw new Error("ARRAY, AND OBJECT PROPERTY MINIMUM ARGUMENTS, OPTIONAL DIRECTION");
-    if (!Array.isArray(objArray)) throw new Error("FIRST ARGUMENT NOT AN ARRAY");
-    const clone = objArray.slice(0);
-    const direct = arguments.length>2 ? arguments[2] : 1; //Default to ascending
-    const propPath = (prop.constructor===Array) ? prop : prop.split(".");
-    clone.sort(function(a,b){
-        for (let p in propPath){
-                if (a[propPath[p]] && b[propPath[p]]){
-                    a = a[propPath[p]];
-                    b = b[propPath[p]];
-                }
+        if(getCookie('school-notes').key != null){
+            global.notes = [];
+            getCookie('school-notes', true).value.notes.forEach(note => global.notes.push(Note.toNote(note)));
         }
-        // convert numeric strings to integers
-        a = a.match(/^\d+$/) ? +a : a;
-        b = b.match(/^\d+$/) ? +b : b;
-        return ( (a < b) ? -1*direct : ((a > b) ? 1*direct : 0) );
+
+        updateNoteArea('#notes', global.notes, global.settings);
+
+        setCookie('school-notes', JSON.stringify({notes: (() => {
+            let toReturn = [];
+            global.notes.forEach(note => toReturn.push(note.toObject()));
+            return toReturn;
+        })()}));
+    })
+
+    // -----------------------------
+
+    // #buttons > *
+
+    // sync button
+    buttons.querySelector(':scope > #btnSync').addEventListener('click', () => {});
+
+    // settings button
+    buttons.querySelector(':scope > #btnSettings').addEventListener('click', () => {
+        showWindowsChild(window_Settings);
     });
-    return clone;
-}
 
-// +---------+
-// |  notes  |
-// +---------+
+    // add note button
+    buttons.querySelector(':scope > #btnAddNote').addEventListener('click', () => {
+        showWindowsChild(window_NoteCreate);
+    });
 
-/**
- * create Note
- * @param {object} json 
- */
-function createNote(json){
-    try{
-        notesObj = JSON.parse(getCookie('school-notes'));
-    }
-    catch(e){
-        notesObj = {notes: []};
-    }
-    if (notesObj == null) notesObj = {notes: []};
-    if (typeof notesObj.notes == 'undefined') notesObj.notes = [];
-    notesObj.notes.push(json);
-    notesObj.notes.forEach((note, index) => note.id = index);
-    setCookie('school-notes', JSON.stringify(notesObj));
-    refresh();
-}
+    // delete notes button
+    buttons.querySelector(':scope > #btnClearCookies').addEventListener('click', () => {
+        showWindowsChild(window_NotesDelete);
+    });
 
-function updateNote(json, id){
-    notesObj = JSON.parse(getCookie('school-notes'));
-    notesObj.notes[id] = json;
-    setCookie('school-notes', JSON.stringify(notesObj));
-    refresh();
-}
+    // search button
+    buttons.querySelector(':scope > #btnSearch').addEventListener('click', () => {});
 
-function removeNote(id){
-    var notesFiltered = notes.filter((value) => { return value.id != parseInt(id); });
-    console.log(id);
-    console.log(typeof id);
-    console.log(notes);
-    console.log(notesFiltered);
-    var notesObj = {notes: notesFiltered};
-    setCookie('school-notes', JSON.stringify(notesObj));
-    refresh();
-}
+    // filter button
+    buttons.querySelector(':scope > #btnFilter').addEventListener('click', () => {
+        showWindowsChild(window_Filter_Sorting);
+    });
 
-function createNoteBox(note){
-    var notebox = `
-    <div id="${note.id}" class="${(note.checked) ? 'bg-success text-white' : (note.important) ? 'bg-warning' : 'bg-light'} bg-gradient p-4 box rounded m-3 col-1" >
+    // -----------------------------
 
-        <!-- title -->
-        <div class="mb-3 d-flex justify-content-between align-items-center">
-            <h4 class="pt-1">${note.title}</h4>
-            <button type="button" class="btn p-1 btnEdit" style="height: auto !important;">   
-                <svg width="25" height="25" viewBox="0 0 16 16" class="bi bi-three-dots-vertical" fill="${(note.checked) ? 'white' : 'currentColor'}" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-                </svg>
-            </button>
-        </div>
-        <!-- subject -->
-        <div class="mb-3">
-            Fach: ${note.subject}
-        </div>
-        <!-- date -->
-        <div class="mb-4">
-            Zu erledigen bis: ${moment(note.date, 'YYYY-MM-DD').format(dateFormat)}
-        </div>
-        <!-- notes -->
-        <div class="">
-            <div class="p-1 mb-2 plain" style="display: none;">
-                ${note.content}
-            </div>
-            <div class="p-1 markdown" id="content">
-                ${markdownToHtml(note.content)}
-            </div>
-        </div>
-    </div>
+    // #create-note > *
 
-    `;
+    window_NoteCreate.querySelector(':scope #btnCreateNote').addEventListener('click', () => {
+        // Creates a new Note object and pushes it to the notes array
+        global.notes.push(new Note(
+            window_NoteCreate.querySelector(':scope #title').value,
+            window_NoteCreate.querySelector(':scope #subject').value,
+            window_NoteCreate.querySelector(':scope #date').value,
+            window_NoteCreate.querySelector(':scope #important').checked,
+            false,
+            window_NoteCreate.querySelector(':scope #content').value
+        ));
+        
+        // Updates the cookies with the new version of the notes array
+        setCookie('school-notes', JSON.stringify({notes: (() => {
+            let toReturn = [];
+            global.notes.forEach(note => toReturn.push(note.toObject()));
+            return toReturn;
+        })()}));
 
-    return notebox;
-}
+        document.querySelector('#windows').style.display = 'none';
+        document.dispatchEvent(global.events.reload);
+    });
 
-function checkConnection(){
-    return true;
-}
+    // -----------------------------
 
-// menu
+    // #delete-notes > *
 
-function noteCheck(id, val){
-    notesObj = JSON.parse(getCookie('school-notes'));
-    notesObj.notes[id].checked = val;
-    notesObj.notes[id].important = false;
-    setCookie('school-notes', JSON.stringify(notesObj));
-    refresh();
-}
+    window_NotesDelete.querySelector(':scope #btnNotesDelete').addEventListener('click', () => {
+        // remove all Note objects from the notes array
+        global.notes = [];
 
-// +-----------+
-// |  cookies  |
-// +-----------+
+        // Updates the cookies with the new version of the notes array
+        setCookie('school-notes', JSON.stringify({notes: (() => {
+            let toReturn = [];
+            global.notes.forEach(note => toReturn.push(note.toObject()));
+            return toReturn;
+        })()}));
 
-/**
- * get cookie
- * @param {String} name
- */
-function getCookie(name){
+        document.querySelector('#windows').style.display = 'none';
+        document.dispatchEvent(global.events.reload);
+    });
 
-    var cookies = document.cookie.split(';'),
-        cp = [],
-        searchedCookie = null;
+    // -----------------------------
 
-    cookies.forEach((cookieparts) => {
-        cp = cookieparts.split('=');
-        if (name == cp[0].trim()) {
-            searchedCookie = decodeURIComponent(cp[1]);
+    // #settings > *
+
+    // date format
+    window_Settings.querySelector(':scope #dateFormat').value = global.settings.dateFormat;
+    window_Settings.querySelector(':scope #dateFormatDisplay').innerHTML = moment('2019-12-24', 'YYYY-MM-DD').format(global.settings.dateFormat);
+
+    // changes date format in settings
+
+    window_Settings.querySelector(':scope #dateFormat').addEventListener('keyup', () => {
+        try {
+            global.settings.dateFormat = window_Settings.querySelector(':scope #dateFormat').value;
+            window_Settings.querySelector(':scope #dateFormatDisplay').innerHTML = moment('2019-12-24', 'YYYY-MM-DD').format(global.settings.dateFormat);
+        }
+        catch (e) {}
+    })
+
+    // download notes as raw json file
+
+    window_Settings.querySelector(':scope #btnDownloadNotes').addEventListener('click', () => {
+        downloadCookie('school-notes');
+    });
+
+    // -----------------------------
+
+    // #filter-sorting > *
+
+    // changes the sorting settings
+    window_Filter_Sorting.querySelector(':scope #sort').addEventListener('change', () => {
+        switch (window_Filter_Sorting.querySelector(':scope #sort').value) {
+            // sort by date
+            // down
+            case 'Datum absteigend':
+                global.settings.sorting = ['date', -1];
+                break;
+            
+            // up
+            case 'Datum aufsteigend':
+                global.settings.sorting = ['date', 1];
+                break;
+
+            // sort by title
+            // down
+            case 'Titel absteigend':
+                global.settings.sorting = ['title', 1];
+                break;
+            
+            // up
+            case 'Titel aufsteigend':
+                global.settings.sorting = ['title', -1];
+                break;
+            
+            // sort by subject
+            // down    
+            case 'Fach absteigend':
+                global.settings.sorting = ['subject', 1];
+                break;
+            
+            // up    
+            case 'Fach aufsteigend':
+                global.settings.sorting = ['subject', -1];
+                break;
         }
     });
-    return searchedCookie;
 
-    
+    // Changes the visibility of important notes
+    window_Filter_Sorting.querySelector(':scope #showImportantNotes').addEventListener('change', () => {
+        global.settings.visible.important = window_Filter_Sorting.querySelector(':scope #showImportantNotes').checked;
+    });
+
+    // Changes the visibility of normal notes
+    window_Filter_Sorting.querySelector(':scope #showNormalNotes').addEventListener('change', () => {
+        global.settings.visible.normal = window_Filter_Sorting.querySelector(':scope #showNormalNotes').checked;
+    });
+
+    // Changes the visibility of checked notes
+    window_Filter_Sorting.querySelector(':scope #showCheckedNotes').addEventListener('change', () => {
+        global.settings.visible.checked = window_Filter_Sorting.querySelector(':scope #showCheckedNotes').checked;
+    });
+
+    // -----------------------------
+
+    // #window_NoteMenu > *
+
+    // btnCheck is pressed
+    window_NoteMenu.querySelector('#btnCheck').addEventListener('click', () => {
+        global.notes[global.onWorkingId].checked = true;
+
+        // Updates the cookies with the new version of the notes array
+        setCookie('school-notes', JSON.stringify({notes: (() => {
+            let toReturn = [];
+            global.notes.forEach(note => toReturn.push(note.toObject()));
+            return toReturn;
+        })()}));
+
+        document.querySelector('#windows').style.display = 'none';
+        document.dispatchEvent(global.events.reload);
+    });
+
+    // btnEdit is pressed
+    window_NoteMenu.querySelector('#btnEdit').addEventListener('click', () => {
+        note = global.notes[global.onWorkingId];
+
+        window_NoteEdit.querySelector(':scope #editTitle').value = note.title;
+        window_NoteEdit.querySelector(':scope #editSubject').value = note.subject;
+        window_NoteEdit.querySelector(':scope #editDate').value = note.date;
+        window_NoteEdit.querySelector(':scope #editImportant').checked = note.important;
+        window_NoteEdit.querySelector(':scope #editChecked').checked = note.checked;
+        window_NoteEdit.querySelector(':scope #editContent').value = note.content;
+        
+        document.querySelector('#windows').style.display = 'none';
+        showWindowsChild(window_NoteEdit);
+    });
+
+    // btnDelete is pressed
+    window_NoteMenu.querySelector(':scope #btnDelete').addEventListener('click', () => {
+        // Deletes the note with the same id as onWorkingId
+        global.notes = global.notes.filter(note => note.id != parseInt(global.onWorkingId));
+
+        // Updates the cookies with the new version of the notes array
+        setCookie('school-notes', JSON.stringify({notes: (() => {
+            let toReturn = [];
+            global.notes.forEach(note => toReturn.push(note.toObject()));
+            return toReturn;
+        })()}));
+    });
+
+    // -----------------------------
+
+    // #note-edit > *
+
+    window_NoteEdit.querySelector(':scope #btnEditNote').addEventListener('click', () => {
+        global.notes[global.onWorkingId] = new Note(
+            window_NoteEdit.querySelector(':scope #editTitle').value,
+            window_NoteEdit.querySelector(':scope #editSubject').value,
+            window_NoteEdit.querySelector(':scope #editDate').value,
+            window_NoteEdit.querySelector(':scope #editImportant').checked,
+            window_NoteEdit.querySelector(':scope #editChecked').checked,
+            window_NoteEdit.querySelector(':scope #editContent').value,
+            global.onWorkingId
+        );
+
+        // Updates the cookies with the new version of the notes array
+        setCookie('school-notes', JSON.stringify({notes: (() => {
+            let toReturn = [];
+            global.notes.forEach(note => toReturn.push(note.toObject()));
+            return toReturn;
+        })()}));
+
+        document.querySelector('#windows').style.display = 'none';
+        document.dispatchEvent(global.events.reload);
+    });
+
+    // -----------------------------
+
+    // Cancle Button: .btnCancle
+    document.querySelectorAll('.btnCancle').forEach(element => element.addEventListener('click', () => {
+        document.querySelector('#windows').style.display = 'none';
+        document.dispatchEvent(global.events.reload);
+    }))
+
+
+    document.dispatchEvent(global.events.reload);
+});
+
+function checkAlerts(){
+    document.querySelector('#alerts').style.display = 'none';
 }
 
 /**
- * set cookie
- * @param {String} name 
- * @param {String} value required when setting cookie
+ * make a element and the background of #windows visible
+ * @param {object} element element which should be visible
  */
-function setCookie(name, value){   
-    var cookie = name + '=' + encodeURIComponent(value) + `; max-age= ${60*60*24*30}; path=/;`;
-    document.cookie = cookie;    
-}
-
-// download
-
-function download(filename, text) {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
-  
-    element.style.display = 'none';
-    document.body.appendChild(element);
-  
-    element.click();
-  
-    document.body.removeChild(element);
-}
-
-// markdown
-
-function markdownToHtml(markdown){
-    const converter = new showdown.Converter();
-    showdown.setFlavor('github');
-
-    if (markdown){
-        return converter.makeHtml(markdown);
-    } else {
-        return;
-    }
+function showWindowsChild(element){
+    let windows = document.querySelector('#windows');
+    windows.style.display = '';
+    windows.querySelectorAll(':scope > :not(#background)').forEach(element => element.style.display = 'none');
+    element.style.display = '';
 }

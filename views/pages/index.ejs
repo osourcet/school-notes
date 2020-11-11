@@ -19,7 +19,7 @@
 
 
         <!-- Create Note -->
-        <div id="create-note-form" class="bg-light bg-gradient p-4 menu-box rounded">
+        <div id="note-create" class="bg-light bg-gradient p-4 menu-box rounded">
             <form>
                 <!-- title -->
                 <div class="mb-3">
@@ -71,10 +71,10 @@
         </div>
 
 
-        <!-- Clear cookies -->
-        <div id="clear-cookies" class="bg-light bg-gradient p-4 menu-box rounded">
+        <!-- Delete all notes -->
+        <div id="notes-delete" class="bg-light bg-gradient p-4 menu-box rounded">
             <div>
-                <button type="button" class="btn btn-danger mb-3" id="btnClearCokkies" style="width: 100%;">
+                <button type="button" class="btn btn-danger mb-3" id="btnNotesDelete" style="width: 100%;">
                     <div class="mb-2 pt-2">
                         <svg width="80" height="80" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
@@ -127,7 +127,7 @@
         </div>
 
         <!-- filter / sort -->
-        <div id="filter" class="bg-light bg-gradient p-4 menu-box rounded">
+        <div id="filter-sorting" class="bg-light bg-gradient p-4 menu-box rounded">
             <div>
                 <h3 class="mb-4">
                     <svg width="24" height="24" viewBox="0 0 16 16" class="bi bi-gear-fill mr-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -202,7 +202,7 @@
                             <path fill-rule="evenodd" d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5z"/>
                         </svg>
                     </button>
-                    <button id="btnDelete" type="button" class="btn btn-danger">
+                    <button id="btnDelete" type="button" class="btn btn-danger btnCancle">
                         <svg width="35" height="35" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
                         </svg>
@@ -213,7 +213,7 @@
         </div>
 
         <!-- Note Edit -->
-        <div id="edit-note-form" class="bg-light bg-gradient p-4 menu-box rounded">
+        <div id="note-edit" class="bg-light bg-gradient p-4 menu-box rounded">
             <form>
                 <!-- title -->
                 <div class="mb-3">
@@ -380,250 +380,29 @@
     <!-- Showdown JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"></script>
 
+    <script>
+        // define global variables
+        let global = {
+            settings: {
+                dateFormat: 'DD.MM.YYYY',
+                sorting: ['date', 1],
+                visible: {
+                    important: true,
+                    normal: true,
+                    checked: false
+                }
+            },
+            onWorkingId: null,
+            events: {
+                reload: new CustomEvent('reload', {bubbles: true}),
+            },
+            notes: []
+        };
+    </script>
+
+    <script src="/sources/js/cookies.js"></script>
+    <script src="/sources/js/notes.js"></script>
+    <script src="/sources/js/update.js"></script>
     <script src="/sources/js/main.js"></script>
-
-    <!-- Local Vars -->
-    <script>
-        var createNoteForm = $('#create-note-form > form'),
-            dateFormat = 'DD.MM.YYYY',
-            sortSettings = ['date', 1],
-            showNotes = [true, true, false], // Important notes, normal notes, checked notes
-            editNotes = false,
-            editNoteId = null;
-    </script>
-
-    <script>
-        $(() => {
-            // tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            });
-
-            // click event handler
-
-            // submit Create Note Form
-            // createNoteForm.children('#create-note-btn').on('click', () => {
-            //     noteObj = {
-            //         'title': createNoteForm.children('div').children('#title').val(),
-            //         'subject': createNoteForm.children('div').children('#subject').val(),
-            //         'date': createNoteForm.children('div').children('#date').val(),
-            //         'important': createNoteForm.children('div').children('#important').is(':checked'),
-            //         'content': createNoteForm.children('div').children('#content').val(),
-            //     };
-
-            //     createNote(noteObj);
-            // });
-
-
-            // Sync
-            $('#btnSync').on('click', () => {});
-
-            // Settings
-            $('#btnSettings').on('click', () => {
-                $('#windows').show();
-                $('#windows').children(':not(#background)').hide();
-                $('#settings').show();
-            });
-
-            // Add note
-            $('#btnAddNote').on('click', () => {
-                $('#windows').show();
-                $('#windows').children(':not(#background)').hide();
-                $('#create-note-form').show();
-            });
-
-            // Clear cookies
-            $('#btnClearCookies').on('click', () => {
-                $('#windows').show();
-                $('#windows').children(':not(#background)').hide();
-                $('#clear-cookies').show();
-            });
-
-            // Search
-            $('#btnSearch').on('click', () => {});
-
-            // Filter
-            $('#btnFilter').on('click', () => {
-                $('#windows').show();
-                $('#windows').children(':not(#background)').hide();
-                $('#filter').show();
-            });
-
-            
-
-            // -- Forms / Menus --
-
-
-            // Create Note
-            $('#btnCreateNote').on('click', () => {
-                noteObj = {
-                    'title': createNoteForm.children('div').children('#title').val(),
-                    'subject': createNoteForm.children('div').children('#subject').val(),
-                    'date': createNoteForm.children('div').children('#date').val(),
-                    'important': createNoteForm.children('div').children('#important').is(':checked'),
-                    'content': createNoteForm.children('div').children('#content').val(),
-                    'ckecked': false
-                };
-
-                $('#windows').hide();
-
-                // editNotes = true;
-                createNote(noteObj);
-            });
-
-
-            // Clear cookies
-            $('#btnClearCokkies').on('click', () => {
-                $('#windows').hide();
-                setCookie('school-notes', 'none');
-                // editNotes = true;
-                refresh();
-            });
-
-
-            // Settings
-
-            // Date
-            $('#dateFormat').val(dateFormat);
-            var date = moment('2019-12-24', 'YYYY-MM-DD').format(dateFormat);
-            $('#dateFormatDisplay').html(date);
-            $('#dateFormat').keyup(() => {
-                
-                try{
-                    dateFormat = $('#dateFormat').val();
-                    var date = moment('2019-12-24', 'YYYY-MM-DD').format(dateFormat);
-                    $('#dateFormatDisplay').html(date);
-                }
-                catch(e){}
-            });
-
-            // Download Notes
-            $('#btnDownloadNotes').on('click', () => {
-                download('notes.json', getCookie('school-notes'));
-            });
-
-            // +--------+
-            // |  sort  |
-            // +--------+
-
-            $('#sort').on('change', () => {
-                switch ($('#sort').val()) {
-                    // sort by date
-                    // down
-                    case 'Datum absteigend':
-                        sortSettings = ['date', -1];
-                        break;
-                    
-                    // up
-                    case 'Datum aufsteigend':
-                        sortSettings = ['date', 1];
-                        break;
-
-                    // sort by title
-                    // down
-                    case 'Titel absteigend':
-                        sortSettings = ['title', 1];
-                        break;
-                    
-                    // up
-                    case 'Titel aufsteigend':
-                        sortSettings = ['title', -1];
-                        break;
-                    
-                    // sort by subject
-                    // down    
-                    case 'Fach absteigend':
-                        sortSettings = ['subject', 1];
-                        break;
-                    
-                    // up    
-                    case 'Fach aufsteigend':
-                        sortSettings = ['subject', -1];
-                        break;
-                }
-            });
-
-            // +----------+
-            // |  filter  |
-            // +----------+
-
-            $('#showImportantNotes').on('change', () => {
-                showNotes[0] = $('#showImportantNotes').is(':checked');
-            });
-
-            $('#showNormalNotes').on('change', () => {
-                showNotes[1] = $('#showNormalNotes').is(':checked');
-            });
-
-            $('#showCheckedNotes').on('change', () => {
-                showNotes[2] = $('#showCheckedNotes').is(':checked');
-            });
-
-            // +----------------+
-            // |  note options  |
-            // +----------------+
-
-            $('#btnCheck').on('click', () => {
-                noteCheck(editNoteId, true);
-                $('#windows').hide();
-            });
-
-            $('#btnUnCheck').on('click', () => {
-                noteCheck(editNoteId, false);
-            });
-
-            $('#btnEdit').on('click', () => {
-                $('#windwos').hide();
-                $('#windows').show();
-                $('#windows').children(':not(#background)').hide();
-
-                // get input
-
-                var noteObj = notes.filter((val) => val.id == editNoteId)[0];
-                
-                $('#editTitle').val(noteObj.title);
-                $('#editSubject').val(noteObj.subject);
-                $('#editDate').val(noteObj.date);
-                $('#editImportant').prop('checked', noteObj.important);
-                $('#editChecked').prop('checked', noteObj.checked);
-                $('#editContent').val(noteObj.content);
-
-                $('#edit-note-form').show();
-            });
-
-            $('#btnDelete').on('click', () => {
-                $('#windows').hide();
-                removeNote(editNoteId);
-            });
-
-            // edit note form
-            $('#btnEditNote').on('click', () => {
-                noteObj = {
-                    'title': $('#editTitle').val(),
-                    'subject': $('#editSubject').val(),
-                    'date': ($('#editDate').val() == "") ? `${new Date().getFullYear()}-${new Date().getMonth() + 1}-${new Date().getDate()}` : $('#editDate').val(),
-                    'important': $('#editImportant').is(':checked'),
-                    'content': $('#editContent').val(),
-                    'ckecked': $('#editChecked').is(':checked')
-                };
-
-                $('#windows').hide();
-
-                // editNotes = true;
-                updateNote(noteObj, editNoteId);
-                //noteCheck(editNoteId);
-            });
-
-            // Cancle
-            $('.btnCancle').on('click', () => {
-                $('#windows').hide();
-                refresh();
-            });
-
-            // refresh
-            refresh();
-        });
-    </script>
 </body>
 </html>

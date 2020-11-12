@@ -14,7 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // #note-menu > *
         window_NoteMenu = document.querySelector('#note-menu'),
         // #note-edit > *
-        window_NoteEdit = document.querySelector('#note-edit');
+        window_NoteEdit = document.querySelector('#note-edit'),
+        // #note-share > *
+        window_NoteShare = document.querySelector('#note-share');
 
     // +------------------+
     // |  event listener  |
@@ -226,6 +228,25 @@ document.addEventListener('DOMContentLoaded', () => {
         
         document.querySelector('#windows').style.display = 'none';
         showWindowsChild(window_NoteEdit);
+    });
+
+    window_NoteMenu.querySelector('#btnShare').addEventListener('click', async () => {
+
+        let note = global.notes[global.onWorkingId].toObject();
+
+        let req = await fetch('/api/note/share', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({note})
+        });
+
+        let data = await req.json();
+        window_NoteShare.querySelector('#shared-link').value = `${window.location.href}shared?id=${data.id}`;
+
+        document.querySelector('#windows').style.display = 'none';
+        showWindowsChild(window_NoteShare);
     });
 
     // btnDelete is pressed

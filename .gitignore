@@ -5,4 +5,4 @@ data/sql/test
 
 # files
 package-lock.json
-# data/sql/data.db
+data/sql/data.db

@@ -290,11 +290,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // -----------------------------
 
+    // Copy to Clipboard: .btnClipboard
+
+    document.querySelectorAll('.btnClipboard').forEach(element => element.addEventListener('click', () => {
+        let target = document.querySelector(`#${document.querySelector('.btnClipboard:focus').dataset.target}`)
+        target.select();
+        target.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        console.log(e);
+    }));
+
+    // -----------------------------
+
     // Cancle Button: .btnCancle
     document.querySelectorAll('.btnCancle').forEach(element => element.addEventListener('click', () => {
         document.querySelector('#windows').style.display = 'none';
         document.dispatchEvent(global.events.reload);
-    }))
+    }));
 
 
     document.dispatchEvent(global.events.reload);

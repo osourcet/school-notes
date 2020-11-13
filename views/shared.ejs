@@ -19,13 +19,19 @@
                     </svg>
                     Optionen
                 </h3>
-                <button id="btnCheck" type="button" class="btn btn-primary mb-3" style="width: 100%;">In meinen Notizen speichern</button>
+                <button id="btnSave" type="button" class="btn btn-primary mb-3" style="width: 100%;">In meinen Notizen speichern</button>
                 <button type="button" class="btn btn-secondary btnCancle" style="width: 100%;">Schließen</button>
             </div>
         </div>
     </div>
     <%- include('templates/nav.ejs') %>
-
+    <div class="d-flex justify-content-center">
+        <div id="alerts">
+            <div id="not-found" class="alert alert-danger mb-3 mt-3" role="alert" style="display: none;">
+                Die Notiz(en) wurde(n) nicht gefunden!
+            </div>
+        </div>
+    </div>
     <div id="root" class=" mt-5">
         <div id="notes" class="d-flex justify-content-center mt-4 row">
         </div>

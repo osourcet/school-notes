@@ -27,8 +27,8 @@ let db = new sqlite3.Database('./data.db');
 //     }
 // });
 
-db.all('SELECT * FROM shared_notes', (err, rows) => {
-    console.log(rows);
-});
+// db.all('SELECT * FROM shared_notes', (err, rows) => {
+//     console.log(rows);
+// });
 
 db.close();

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Note</title>
+    <%- include('templates/import-css.ejs') %>
+</head>
+<body>
+    <div class="windows" id="windows" style="display: none;">
+        <div id="background"></div>
+        <!-- Note Menu -->
+        <div id="note-menu" class="bg-light bg-gradient p-4 menu-box rounded">
+            <div>
+                <h3 class="mb-4">
+                    <svg width="24" height="24" viewBox="0 0 16 16" class="bi bi-gear-fill mr-1" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                        <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                    </svg>
+                    Optionen
+                </h3>
+                <button id="btnSave" type="button" class="btn btn-primary mb-3" style="width: 100%;">In meinen Notizen speichern</button>
+                <button type="button" class="btn btn-secondary btnCancle" style="width: 100%;">Schließen</button>
+            </div>
+        </div>
+    </div>
+    <%- include('templates/nav.ejs') %>
+    <div class="d-flex justify-content-center">
+        <div id="alerts">
+            <div id="not-found" class="alert alert-danger mb-3 mt-3" role="alert" style="display: none;">
+                Die Notiz(en) wurde(n) nicht gefunden!
+            </div>
+        </div>
+    </div>
+    <div id="root" class=" mt-5">
+        <div id="notes" class="d-flex justify-content-center mt-4 row">
+        </div>
+    </div>
+
+    <!-- JS -->
+
+    <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="/sources/js/bootstrap/bootstrap.min.js"></script>
+
+    <!-- Moment JS -->
+    <script src="/sources/js/moment/moment.min.js"></script>
+
+    <!-- Showdown JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.0/showdown.min.js"></script>
+
+    <script>
+        // define global variables
+        let global = {
+            settings: {
+                dateFormat: 'DD.MM.YYYY',
+                sorting: ['date', 1],
+                visible: {
+                    important: true,
+                    normal: true,
+                    checked: false
+                }
+            },
+            onWorkingId: null,
+            events: {},
+            notes: []
+        };
+    </script>
+
+    <script src="/sources/js/cookies.js"></script>
+    <script src="/sources/js/notes.js"></script>
+    <script src="/sources/js/update.js"></script>
+    <script src="/sources/js/shared_main.js"></script>
+</body>
+</html>

@@ -14,7 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // #note-menu > *
         window_NoteMenu = document.querySelector('#note-menu'),
         // #note-edit > *
-        window_NoteEdit = document.querySelector('#note-edit');
+        window_NoteEdit = document.querySelector('#note-edit'),
+        // #note-share > *
+        window_NoteShare = document.querySelector('#note-share');
 
     // +------------------+
     // |  event listener  |
@@ -228,6 +230,25 @@ document.addEventListener('DOMContentLoaded', () => {
         showWindowsChild(window_NoteEdit);
     });
 
+    window_NoteMenu.querySelector('#btnShare').addEventListener('click', async () => {
+
+        let note = global.notes[global.onWorkingId].toObject();
+
+        let req = await fetch('/api/note/share', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({note})
+        });
+
+        let data = await req.json();
+        window_NoteShare.querySelector('#shared-link').value = `${window.location.href}shared?id=${data.id}`;
+
+        document.querySelector('#windows').style.display = 'none';
+        showWindowsChild(window_NoteShare);
+    });
+
     // btnDelete is pressed
     window_NoteMenu.querySelector(':scope #btnDelete').addEventListener('click', () => {
         // Deletes the note with the same id as onWorkingId
@@ -269,11 +290,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // -----------------------------
 
+    // Copy to Clipboard: .btnClipboard
+
+    document.querySelectorAll('.btnClipboard').forEach(element => element.addEventListener('click', () => {
+        let target = document.querySelector(`#${document.querySelector('.btnClipboard:focus').dataset.target}`)
+        target.select();
+        target.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        console.log(e);
+    }));
+
+    // -----------------------------
+
     // Cancle Button: .btnCancle
     document.querySelectorAll('.btnCancle').forEach(element => element.addEventListener('click', () => {
         document.querySelector('#windows').style.display = 'none';
         document.dispatchEvent(global.events.reload);
-    }))
+    }));
 
 
     document.dispatchEvent(global.events.reload);

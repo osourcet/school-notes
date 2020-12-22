@@ -1,2 +1,0 @@
-CREATE TABLE 'users' (id TEXT PRIMARY KEY NOT NULL, username TEXT NOT NULL, passwd TEXT NOT NULL, email TEXT DEFAULT '', json_data TEXT DEFAULT '');
-

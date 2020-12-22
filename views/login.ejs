@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Login</title>
+        <%- include('templates/import-css.ejs') %>
+    </head>
+    <body>
+        <noscript>Für diese Anwendung muss Java Script aktiviert sein!</noscript>
+        <%- include('templates/nav.ejs') %>
+
+        <div id="root" class="d-flex flex-column justify-content-center align-items-center" style="width: 100%; height: calc(100vh - 56px);">
+            <div class="box rounded p-4">
+                <form>
+                    <div class="mb-3" >
+                        <label for="username" class="form-label">Benutzername / E-Mail Adresse:</label>
+                        <input type="text" class="form-control" id="username" name="username" aria-describedby="emailHelp">
+                    </div>
+                    <!-- <div class="mb-3">
+                        <label for="email" class="form-label">E-Mail Adresse:</label>
+                        <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
+                    </div> -->
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Passwort:</label>
+                        <input type="password" class="form-control" id="password">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="save-login">
+                        <label class="form-check-label" for="save-login">Angemeldet bleiben</label>
+                    </div>
+                    <div class="mb-3">
+                        <a class="link-dark" href="/register">Wollen sie sich registrieren?</a>
+                    </div>
+                    <!-- <div class="mb-3">
+                        <a class="link-dark" href="/register">Passwort vergessen?</a>
+                    </div> -->
+                    <button type="button" id="login" class="btn btn-primary" style="width: 100%;">Anmelden</button>
+                </form>
+            </div>
+        </div>
+    </body>
+
+    <!-- JS -->
+    <script src="/sources/js/cookies.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+
+
+            document.getElementById('login').addEventListener('click', async () => {
+                let userdata = {
+                    username: document.getElementById('username').value,
+                    password: document.getElementById('password').value,
+                };
+                
+                let req = await fetch('/api/users/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': getCookie('school-notes-login')
+                    },
+                    body: JSON.stringify({userdata})
+                });
+
+                let data = await req.json();
+
+                console.log(data);
+
+                if (data.status == "success"){
+                    await setCookie('school-notes-login', `${data.jwt}`, false);
+                }
+
+                // if (typeof data.redirect != "undefined"){
+                //     window.location = data.redirect;
+                // }
+
+            });
+
+
+        });
+    </script>
+</html>

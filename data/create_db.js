@@ -31,4 +31,14 @@ let db = new sqlite3.Database('./data.db');
 //     console.log(rows);
 // });
 
+// ####################
+// db.serialize(() => {
+//     db.run(`CREATE TABLE 'users' (id TEXT PRIMARY KEY NOT NULL, username TEXT NOT NULL, passwd TEXT NOT NULL, email TEXT DEFAULT '', json_notes TEXT DEFAULT '{}', json_notes_update TEXT DEFAULT '', json_settings TEXT DEFAULT '{}', json_settings_update TEXT DEFAULT '');`, (err) => console.log((err) ? err : 'Success'))
+// });
+
+db.get('SELECT * FROM users', (err, row) => {
+    console.log(row);
+});
+
+
 db.close();

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Registrierung</title>
+        <%- include('templates/import-css.ejs') %>
+    </head>
+    <body>
+        <noscript>Für diese Anwendung muss Java Script aktiviert sein!</noscript>
+        <%- include('templates/nav.ejs') %>
+
+        <div id="root" class="d-flex flex-column justify-content-center align-items-center" style="width: 100%; height: calc(100vh - 56px);">
+            <div class="box rounded p-4">
+                <form>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" name="use" type="radio" id="use-username" value="option1" checked>
+                            <label class="form-check-label" for="gridRadios1">
+                                Benutzername verwenden
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" name="use" type="radio" id="use-email" value="option2">
+                            <label class="form-check-label" for="gridRadios2">
+                                E-Mail Adresse verwenden
+                            </label>
+                        </div>
+                        <div class="form-text">Sie können die E-Mail Adresse für die Passwortwiederherstellung nutzen.</div>
+                    </div>
+                    <div class="mb-3" id="div-username">
+                        <label for="username" class="form-label">Benutzername:</label>
+                        <input type="text" class="form-control" id="username" name="username" aria-describedby="emailHelp">
+                    </div>
+                    <div class="mb-3" id="div-email" style="display: none;">
+                        <label for="email" class="form-label">E-Mail Adresse:</label>
+                        <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Passwort:</label>
+                        <input type="password" class="form-control" id="password">
+                    </div>
+                    <div class="mb-3">
+                        <a class="link-dark" href="/login">Haben sie schon ein Benutzkonto?</a>
+                    </div>
+                    <button id="register" type="button" class="btn btn-primary" style="width: 100%;">Registrieren</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- JS -->
+
+        <!-- Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="/sources/js/bootstrap/bootstrap.min.js"></script>
+
+        <script src="/sources/js/cookies.js"></script>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelector('#use-username').addEventListener('change', () => {
+
+                    document.querySelector('#div-username').style.display = '';
+                    document.querySelector('#div-email').style.display = 'none';
+                });
+                document.querySelector('#use-email').addEventListener('change', () => {
+
+                    document.querySelector('#div-username').style.display = 'none';
+                    document.querySelector('#div-email').style.display = '';
+                });
+
+                document.getElementById('register').addEventListener('click', async () => {
+                    let userdata = {
+                        username: document.querySelector('#use-email').checked ? document.getElementById('email').value : document.getElementById('username').value,
+                        email: document.querySelector('#use-email').checked,
+                        password: document.getElementById('password').value,
+                    };
+                    
+                    let req = await fetch('/api/users/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': getCookie('school-notes-login')
+                        },
+                        body: JSON.stringify({userdata})
+                    });
+
+                    let data = await req.json();
+
+                    console.log(data);
+
+                    if (data.status == "success"){
+
+                    }
+                    
+                    // if (typeof data.redirect != "undefined"){
+                    //     window.location = data.redirect;
+                    // }
+
+                });
+            });
+        </script>
+    </body>
+</html>

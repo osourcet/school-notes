@@ -45,7 +45,7 @@ app.get('/user', auth_token, (req, res) => {
     if (typeof req.user == 'undefined')
         res.redirect('/login');
     else
-        res.send(`name: ${req.user.username}`); //res.render('login.ejs', {version: require('./package.json').version});
+    res.render('user.ejs', {version: require('./package.json').version});
 });
 
 // +--------+

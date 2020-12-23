@@ -30,8 +30,15 @@ function getCookie(name, json){
  * @param {string} key 
  * @param {string} value required when setting cookie
  */
-function setCookie(key, value){   
-    let cookie = key + '=' + encodeURIComponent(value) + `; max-age= ${60*60*24*30}; path=/;`;
+function setCookie(key, value, encode=true){
+    let cookie
+    if (encode){
+        cookie = key + '=' + encodeURIComponent(value) + `; max-age= ${60*60*24*30}; path=/;`;
+    }
+    else{
+        cookie = key + '=' + value + `; max-age= ${60*60*24*30}; path=/;`;
+    }
+    
     document.cookie = cookie;    
 }
 

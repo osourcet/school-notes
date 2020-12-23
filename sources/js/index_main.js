@@ -23,17 +23,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // +------------------+
 
     // reload event listener
-    document.addEventListener('reload', () => {
-        checkAlerts();
+    document.addEventListener('reload', async () => {
+        await checkAlerts();
 
-        if(getCookie('school-notes').key != null){
+        if(await getCookie('school-notes').key != null){
             global.notes = [];
-            getCookie('school-notes', true).value.notes.forEach(note => global.notes.push(Note.toNote(note)));
+            await getCookie('school-notes', true).value.notes.forEach(note => global.notes.push(Note.toNote(note)));
         }
 
-        updateNoteArea('#notes', global.notes, global.settings);
+        let req = await fetch('/api/users/notes/get', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': getCookie('school-notes-login').value
+            },
+            body: JSON.stringify({})
+        });
 
-        setCookie('school-notes', JSON.stringify({notes: (() => {
+        let data = await req.json();
+
+        if (data.status == 'success')
+            global.notes = [];
+            data.notes.forEach(note => global.notes.push(Note.toNote(note)));
+
+        console.log(data);
+
+        await updateNoteArea('#notes', global.notes, global.settings);
+
+        await setCookie('school-notes', JSON.stringify({notes: (() => {
             let toReturn = [];
             global.notes.forEach(note => toReturn.push(note.toObject()));
             return toReturn;
@@ -45,7 +62,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // #buttons > *
 
     // sync button
-    buttons.querySelector(':scope > #btnSync').addEventListener('click', () => {});
+    buttons.querySelector(':scope > #btnSync').addEventListener('click', async () => {
+        let nts = [];
+        global.notes.forEach(note => nts.push(note.toObject()))
+        let req = await fetch('/api/users/notes/set', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': getCookie('school-notes-login').value
+            },
+            body: JSON.stringify({notes: nts})
+        });
+
+        let data = await req.json();
+
+        console.log(data);
+    });
 
     // settings button
     buttons.querySelector(':scope > #btnSettings').addEventListener('click', () => {
@@ -297,7 +329,6 @@ document.addEventListener('DOMContentLoaded', () => {
         target.select();
         target.setSelectionRange(0, 99999);
         document.execCommand("copy");
-        console.log(e);
     }));
 
     // -----------------------------

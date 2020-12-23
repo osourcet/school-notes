@@ -4,9 +4,9 @@ COPY . /school-notes/
 
 EXPOSE 3000
 
-RUN npm install node-pre-gyp -g
+# RUN npm install node-pre-gyp -g
 
 WORKDIR /school-notes/
-RUN npm install
+RUN npm install --save
 RUN npm run install-server
 CMD [ "npm", "run", "run-server" ]

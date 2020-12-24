@@ -8,5 +8,5 @@ EXPOSE 3000
 
 WORKDIR /school-notes/
 RUN npm install --save
-RUN npm run install-server
-CMD [ "npm", "run", "run-server" ]
+# RUN chmod +x docker.sh
+CMD [ "npm", "run", "install-server", "&&", "npm", "run", "run-server" ]

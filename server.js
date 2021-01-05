@@ -205,7 +205,7 @@ app.post('/api/users/notes/set', auth_token, (req, res) => {
         let db = new sqlite.Database('./data/data.db');
 
         db.serialize(() => {
-            db.run('UPDATE users SET json_notes=?, json_notes_update=? WHERE id=?', [JSON.stringify({notes: (typeof req.body.notes == 'string') ? JSON.parse(req.body.notes) : req.body.notes}), new Date().toString(), req.user.id], (err) => {
+            db.run('UPDATE users SET json_notes=?, json_notes_update=? WHERE id=?', [JSON.stringify({notes: (typeof req.body.notes == 'string') ? JSON.parse(req.body.notes) : req.body.notes}), new Date(Date.now()).toString(), req.user.id], (err) => {
                 if (err) 
                     res.json({'status': 'failed'});
                 else

@@ -3,6 +3,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     // gets id from Url query
     let urlParams = new URLSearchParams(window.location.search);
 
+    if (urlParams.get('app') != 'false')
+        run('android', () => {
+            // window.location = `http://localhost:6000/shared?id=${urlParams.get('id').toString()}`;
+
+            window.open(`http://localhost:6000/shared?id=${urlParams.get('id').toString()}`)
+
+            // setTimeout(() => {
+            //     window.location = `${window.location.protocol}//${window.location.host}/shared?id=${urlParams.get('id').toString()}&app=false`;
+            // }, 3000)
+        });
+
     // sends post request to get the note
     let req = await fetch('/api/note/get', {
         method: 'POST',

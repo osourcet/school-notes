@@ -42,11 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let data = await req.json();
 
-        if (data.status == 'success')
+        if (data.status == 'success'){
             global.notes = [];
             data.notes.forEach(note => global.notes.push(Note.toNote(note)));
-
-        console.log(data);
+            console.log(data);
+        }
 
         await updateNoteArea('#notes', global.notes, global.settings);
 

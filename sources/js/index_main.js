@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({note})
+            body: JSON.stringify({note: [note]})
         });
 
         let data = await req.json();

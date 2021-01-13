@@ -5,9 +5,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (urlParams.get('app') != 'false')
         run('android', () => {
+            let a = document.createElement('a');
+            a.title = "Test";
+            a.href = 'vnd.youtube://youtube.com/watch?v=w7daiJHfjoY';
+            document.body.appendChild(a);
+            a.click();
+            //window.location = 'vnd.youtube://youtube.com/watch?v=w7daiJHfjoY';//'https://youtu.be/w7daiJHfjoY');
             // window.location = `http://localhost:6000/shared?id=${urlParams.get('id').toString()}`;
 
-            window.open(`http://localhost:6000/shared?id=${urlParams.get('id').toString()}`)
+            // window.open(`http://localhost:6000/shared?id=${urlParams.get('id').toString()}`)
 
             // setTimeout(() => {
             //     window.location = `${window.location.protocol}//${window.location.host}/shared?id=${urlParams.get('id').toString()}&app=false`;
